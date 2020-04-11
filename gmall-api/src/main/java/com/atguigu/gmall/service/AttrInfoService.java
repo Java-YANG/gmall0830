@@ -2,6 +2,7 @@ package com.atguigu.gmall.service;
 
 import com.atguigu.gmall.bean.PmsBaseAttrInfo;
 
+import java.util.HashSet;
 import java.util.List;
 
 public interface AttrInfoService {
@@ -25,4 +26,11 @@ public interface AttrInfoService {
      * @return PmsBaseAttrInfo对象
      */
     PmsBaseAttrInfo getAttrValueList(String attrId);
+
+    /**
+     *  根据valueId的set集合查询平台属性和平台属性值
+     * @param set valueId的集合
+     * @return 平台信息集合
+     */
+    List<PmsBaseAttrInfo> getAttrValueByValueId(HashSet<String> set);
 }

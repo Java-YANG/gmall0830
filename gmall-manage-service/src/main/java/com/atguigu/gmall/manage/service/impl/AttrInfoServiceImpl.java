@@ -7,9 +7,11 @@ import com.atguigu.gmall.bean.PmsProductInfo;
 import com.atguigu.gmall.manage.mapper.PmsBaseAttrInfoMapper;
 import com.atguigu.gmall.manage.mapper.PmsBaseAttrValueMapper;
 import com.atguigu.gmall.service.AttrInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -30,6 +32,19 @@ public class AttrInfoServiceImpl implements AttrInfoService {
 
         // 调用pmsBaseAttrInfoMapper层的查询方法
         List<PmsBaseAttrInfo> pmsBaseAttrInfos = pmsBaseAttrInfoMapper.select(pmsBaseAttrInfo);
+        // 遍历查询到的销售属性聚合
+        for (PmsBaseAttrInfo baseAttrInfo : pmsBaseAttrInfos) {
+            // 获取销售属性id
+            String attrId = baseAttrInfo.getId();
+
+            // 根据销售属性id查询销售属性值
+            PmsBaseAttrValue pmsBaseAttrValue = new PmsBaseAttrValue();
+            pmsBaseAttrValue.setAttrId(attrId);
+            List<PmsBaseAttrValue> pmsBaseAttrValues = pmsBaseAttrValueMapper.select(pmsBaseAttrValue);
+
+            // 将查询到的销售属性值设置到销售属性对象中
+            baseAttrInfo.setAttrValueList(pmsBaseAttrValues);
+        }
 
         // 返回查询结果
         return pmsBaseAttrInfos;
@@ -83,6 +98,15 @@ public class AttrInfoServiceImpl implements AttrInfoService {
         pmsBaseAttrInfo.setAttrValueList(attrValueList);
 
         return pmsBaseAttrInfo;
+    }
+
+    @Override
+    public List<PmsBaseAttrInfo> getAttrValueByValueId(HashSet<String> set) {
+        String valueJoin = StringUtils.join(set, ",");
+
+        List<PmsBaseAttrInfo> pmsBaseAttrInfos = pmsBaseAttrInfoMapper.selectAttrValueByValueId(valueJoin);
+
+        return pmsBaseAttrInfos;
     }
 
 }

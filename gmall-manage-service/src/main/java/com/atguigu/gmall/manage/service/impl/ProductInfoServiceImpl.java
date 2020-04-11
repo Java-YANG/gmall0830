@@ -90,18 +90,45 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Override
     public List<PmsProductSaleAttr> productInfoService(String spuId) {
+        // 根据spu的id查询销售属性
         PmsProductSaleAttr pmsProductSaleAttr = new PmsProductSaleAttr();
         pmsProductSaleAttr.setProductId(spuId);
         List<PmsProductSaleAttr> pmsProductSaleAttrs = pmsProductSaleAttrMapper.select(pmsProductSaleAttr);
+
+        // 遍历查询到的销售属性集合
+        for (PmsProductSaleAttr productSaleAttr : pmsProductSaleAttrs) {
+            // 获取销售属性字典表id
+            String id = productSaleAttr.getSaleAttrId();
+            // 根据spu的id和销售属性字典表id查询销售属性值
+            PmsProductSaleAttrValue pmsProductSaleAttrValue = new PmsProductSaleAttrValue();
+            pmsProductSaleAttrValue.setProductId(spuId);
+            pmsProductSaleAttrValue.setSaleAttrId(id);
+            List<PmsProductSaleAttrValue> pmsProductSaleAttrValues = pmsProductSaleAttrValueMapper.select(pmsProductSaleAttrValue);
+
+            // 将查询到的销售属性值设置到销售属性对象中
+            productSaleAttr.setSpuSaleAttrValueList(pmsProductSaleAttrValues);
+
+        }
+        // 返回查询到的销售属性集合
         return pmsProductSaleAttrs;
     }
 
     @Override
     public List<PmsProductImage> spuImageList(String spuId) {
+        // 根据spu的id查询spu图片
         PmsProductImage pmsProductImage = new PmsProductImage();
         pmsProductImage.setProductId(spuId);
         List<PmsProductImage> pmsProductImages = pmsProductImageMapper.select(pmsProductImage);
+
+        // 返回查询到的spu图片集合
         return pmsProductImages;
+    }
+
+    @Override
+    public List<PmsProductSaleAttr> spuSaleAttrListCheckBySku(String skuId, String productId) {
+        List<PmsProductSaleAttr> pmsProductSaleAttrs = pmsProductSaleAttrMapper.selectSpuSaleAttrListCheckBySku(skuId,productId);
+
+        return pmsProductSaleAttrs;
     }
 
 
